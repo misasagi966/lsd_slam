@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.4.6)
 project(lsd_slam_viewer)
 
+
+
 # Set the build type. Options are:
 #  Coverage : w/ debug symbols, w/o optimization, w/ code-coverage
 #  Debug : w/ debug symbols, w/o optimization
@@ -27,13 +29,13 @@ find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 set(QT_USE_QTXML TRUE)
 find_package(QGLViewer REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 
 include_directories(${QGLVIEWER_INCLUDE_DIR}
 		    ${catkin_INCLUDE_DIRS} 
-		    ${EIGEN_INCLUDE_DIR}
+		    ${EIGEN3_INCLUDE_DIR}
 		    ${QT_INCLUDES} )
 
 # SSE flags
@@ -74,6 +76,7 @@ target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${catkin_LIBRARIES}
 			     ${Boost_LIBRARIES}
 			     ${QT_LIBRARIES}
+           ${OpenCV_LIBS}
 			     GL glut GLU
 		     )
 
