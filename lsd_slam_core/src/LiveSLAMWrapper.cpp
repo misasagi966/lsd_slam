@@ -91,7 +91,7 @@ void LiveSLAMWrapper::Loop()
 		waitLock.unlock();
 		
 		
-		if(fullResetRequested)
+		if(fullResetRequested || imageStream->resetRequested())
 		{
 			resetAll();
 			fullResetRequested = false;

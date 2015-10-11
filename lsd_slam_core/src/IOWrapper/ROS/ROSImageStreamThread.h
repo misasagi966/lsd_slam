@@ -29,6 +29,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <std_msgs/Empty.h>
 #include <geometry_msgs/PoseStamped.h>
 
 #include "util/Undistorter.h"
@@ -55,6 +56,8 @@ public:
 	
 	void setCalibration(std::string file);
 
+	bool resetRequested();
+
 	/**
 	 * Thread main function.
 	 */
@@ -63,18 +66,23 @@ public:
 	// get called on ros-message callbacks
 	void vidCb(const sensor_msgs::ImageConstPtr img);
 	void infoCb(const sensor_msgs::CameraInfoConstPtr info);
+	void resetCb(const std_msgs::EmptyConstPtr empty);
+
 
 private:
 
-	bool haveCalib;
+	bool haveCalib_;
+	bool resetRequested_;
 	Undistorter* undistorter;
 
 	ros::NodeHandle nh_;
 
-	std::string vid_channel;
-	ros::Subscriber vid_sub;
+	std::string vid_channel_;
+	std::string reset_channel_;
+	ros::Subscriber vid_sub_;
+	ros::Subscriber reset_sub_;
 
-	int lastSEQ;
+	int lastSEQ_;
 };
 
 }

@@ -12,10 +12,11 @@ set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   dynamic_reconfigure
-  sensor_msgs
   image_transport
-  roscpp
   rosbag
+  roscpp
+  sensor_msgs
+  std_msgs
 )
 
 find_package(Eigen3 REQUIRED)
@@ -43,7 +44,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
   LIBRARIES lsdslam
   DEPENDS Eigen SuiteSparse
-  CATKIN_DEPENDS libg2o 
+  CATKIN_DEPENDS libg2o
 )
 
 # SSE flags

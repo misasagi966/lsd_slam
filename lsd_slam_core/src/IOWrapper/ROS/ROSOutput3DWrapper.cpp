@@ -19,20 +19,25 @@
 */
 
 #include "ROSOutput3DWrapper.h"
-#include "util/SophusUtil.h"
+
 #include <ros/ros.h>
-#include "util/settings.h"
+#include <cv_bridge/cv_bridge.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Float32MultiArray.h>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-#include "std_msgs/Float32MultiArray.h"
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
 
+#include "util/settings.h"
+#include "util/SophusUtil.h"
+
 #include "DataStructures/Frame.h"
 #include "GlobalMapping/KeyFrameGraph.h"
-#include "sophus/sim3.hpp"
-#include "geometry_msgs/PoseStamped.h"
 #include "GlobalMapping/g2oTypeSim3Sophus.h"
+#include "sophus/sim3.hpp"
 
 namespace lsd_slam
 {
@@ -58,8 +63,12 @@ ROSOutput3DWrapper::ROSOutput3DWrapper(int width, int height)
 	pose_channel = nh_.resolveName("lsd_slam/pose");
 	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel,1);
 
+	image_transport::ImageTransport it(nh_);
 
-	publishLvl=0;
+	image_out_channel = nh_.resolveName("lsd_slam/image_out");
+	image_out_publisher = it.advertise(image_out_channel, 1);
+
+	publishLvl = 0;
 }
 
 ROSOutput3DWrapper::~ROSOutput3DWrapper()
@@ -153,8 +162,15 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 		pMsg.pose.orientation.z *= -1;
 		pMsg.pose.orientation.w *= -1;
 	}
+	ros::Time timestamp = ros::Time(kf->timestamp());
 
-	pMsg.header.stamp = ros::Time(kf->timestamp());
+	cv::Mat imgCv = kf->imageCv(0);
+	sensor_msgs::ImagePtr imgMsg = cv_bridge::CvImage(std_msgs::Header(), "mono8", imgCv).toImageMsg();
+	imgMsg->header.stamp = timestamp;
+	imgMsg->header.frame_id = "world";
+	image_out_publisher.publish(imgMsg);
+
+	pMsg.header.stamp = timestamp;
 	pMsg.header.frame_id = "world";
 	pose_publisher.publish(pMsg);
 }

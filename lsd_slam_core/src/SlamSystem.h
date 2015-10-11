@@ -20,15 +20,18 @@
 
 #pragma once
 #include <vector>
+
 #include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/locks.hpp>
-#include "util/settings.h"
-#include "IOWrapper/Timestamp.h"
-#include "opencv2/core/core.hpp"
 
+#include <opencv2/core/core.hpp>
+
+#include "util/settings.h"
 #include "util/SophusUtil.h"
+
+#include "IOWrapper/Timestamp.h"
 
 #include "Tracking/Relocalizer.h"
 

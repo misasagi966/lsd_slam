@@ -40,9 +40,11 @@ using namespace cv;
 ROSImageStreamThread::ROSImageStreamThread()
 {
 	// subscribe
-	vid_channel = nh_.resolveName("image");
-	vid_sub          = nh_.subscribe(vid_channel,1, &ROSImageStreamThread::vidCb, this);
+	vid_channel_   = nh_.resolveName("image");
+	reset_channel_ = nh_.resolveName("reset");
 
+	vid_sub_     = nh_.subscribe(vid_channel_, 1, &ROSImageStreamThread::vidCb, this);
+	reset_sub_   = nh_.subscribe(reset_channel_, 1, &ROSImageStreamThread::resetCb, this);
 
 	// wait for cam calib
 	width_ = height_ = 0;
@@ -50,9 +52,10 @@ ROSImageStreamThread::ROSImageStreamThread()
 	// imagebuffer
 	imageBuffer = new NotifyBuffer<TimestampedMat>(8);
 	undistorter = 0;
-	lastSEQ = 0;
+	lastSEQ_ = 0;
 
-	haveCalib = false;
+	haveCalib_ = false;
+	resetRequested_ = false;
 }
 
 ROSImageStreamThread::~ROSImageStreamThread()
@@ -64,7 +67,7 @@ void ROSImageStreamThread::setCalibration(std::string file)
 {
 	if(file == "")
 	{
-		ros::Subscriber info_sub         = nh_.subscribe(nh_.resolveName("camera_info"),1, &ROSImageStreamThread::infoCb, this);
+		ros::Subscriber info_sub = nh_.subscribe(nh_.resolveName("camera_info"),1, &ROSImageStreamThread::infoCb, this);
 
 		printf("WAITING for ROS camera calibration!\n");
 		while(width_ == 0)
@@ -94,12 +97,22 @@ void ROSImageStreamThread::setCalibration(std::string file)
 		height_ = undistorter->getOutputHeight();
 	}
 
-	haveCalib = true;
+	haveCalib_ = true;
 }
 
 void ROSImageStreamThread::run()
 {
 	boost::thread thread(boost::ref(*this));
+}
+
+bool ROSImageStreamThread::resetRequested()
+{
+	if (resetRequested_)
+	{
+		resetRequested_ = false;
+		return true;
+	}
+	return false;
 }
 
 void ROSImageStreamThread::operator()()
@@ -112,17 +125,17 @@ void ROSImageStreamThread::operator()()
 
 void ROSImageStreamThread::vidCb(const sensor_msgs::ImageConstPtr img)
 {
-	if(!haveCalib) return;
+	if(!haveCalib_) return;
 
 	cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::RGB8);
 
-	if(img->header.seq < (unsigned int)lastSEQ)
+	if(img->header.seq < (unsigned int)lastSEQ_)
 	{
 		printf("Backward-Jump in SEQ detected, but ignoring for now.\n");
-		lastSEQ = 0;
+		lastSEQ_ = 0;
 		return;
 	}
-	lastSEQ = img->header.seq;
+	lastSEQ_ = img->header.seq;
 
 	TimestampedMat bufferItem;
 	if(img->header.stamp.toSec() != 0)
@@ -145,7 +158,7 @@ void ROSImageStreamThread::vidCb(const sensor_msgs::ImageConstPtr img)
 
 void ROSImageStreamThread::infoCb(const sensor_msgs::CameraInfoConstPtr info)
 {
-	if(!haveCalib)
+	if(!haveCalib_)
 	{
 		fx_ = info->P[0];
 		fy_ = info->P[5];
@@ -166,6 +179,14 @@ void ROSImageStreamThread::infoCb(const sensor_msgs::CameraInfoConstPtr info)
 
 		printf("Received ROS Camera Calibration: fx: %f, fy: %f, cx: %f, cy: %f @ %dx%d\n",fx_,fy_,cx_,cy_,width_,height_);
 	}
+}
+
+void ROSImageStreamThread::resetCb(const std_msgs::EmptyConstPtr empty) {
+
+	printf("Reset cb\n");
+
+	resetRequested_ = true;
+
 }
 
 }

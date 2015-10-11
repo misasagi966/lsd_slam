@@ -46,6 +46,11 @@ public:
 
 	virtual void setCalibration(std::string file) {};
 
+	virtual bool resetRequested()
+	{
+		return false;
+	};
+
 	/**
 	 * Gets the NotifyBuffer to which incoming images are stored.
 	 */

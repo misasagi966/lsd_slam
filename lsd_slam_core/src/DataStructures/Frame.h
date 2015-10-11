@@ -19,15 +19,18 @@
 */
 
 #pragma once
-#include "util/SophusUtil.h"
-#include "util/settings.h"
+#include <unordered_set>
+
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
+
+#include <opencv2/core/core.hpp>
+
 #include "DataStructures/FramePoseStruct.h"
 #include "DataStructures/FrameMemory.h"
-#include "unordered_set"
-#include "util/settings.h"
 
+#include "util/SophusUtil.h"
+#include "util/settings.h"
 
 namespace lsd_slam
 {
@@ -102,6 +105,7 @@ public:
 	
 	inline float* image(int level = 0);
 	inline float* imageRGB(int level = 0);
+	inline const cv::Mat imageCv(int level = 0);
 	inline const Eigen::Vector4f* gradients(int level = 0);
 	inline const float* maxGradients(int level = 0);
 	inline bool hasIDepthBeenSet() const;
@@ -355,8 +359,6 @@ inline double Frame::timestamp() const
 {
 	return data.timestamp;
 }
-
-
 inline float* Frame::image(int level)
 {
 	if (! data.imageValid[level])
@@ -366,6 +368,12 @@ inline float* Frame::image(int level)
 inline float* Frame::imageRGB(int level)
 {
 	return data.imageRGB[level];
+}
+inline const cv::Mat Frame::imageCv(int level)
+{
+	cv::Mat img(height(level), width(level), CV_32FC1, image(level));
+	cv::convertScaleAbs(img, img, 1);
+	return img;
 }
 inline const Eigen::Vector4f* Frame::gradients(int level)
 {

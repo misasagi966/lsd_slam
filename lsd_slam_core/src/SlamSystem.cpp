@@ -967,7 +967,6 @@ void SlamSystem::trackFrame(uchar* image, uchar* rgbImage, unsigned int frameID,
 	}
 
 
-
 	if(plotTracking)
 	{
 		Eigen::Matrix<float, 20, 1> data;

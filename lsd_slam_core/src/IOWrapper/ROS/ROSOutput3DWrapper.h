@@ -21,6 +21,9 @@
 #pragma once
 
 #include <ros/ros.h>
+
+#include <image_transport/image_transport.h>
+
 #include "IOWrapper/Output3DWrapper.h"
 
 
@@ -77,7 +80,6 @@ public:
 
 	virtual void publishDebugInfo(Eigen::Matrix<float, 20, 1> data);
 
-
 	int publishLvl;
 	
 private:
@@ -95,9 +97,11 @@ private:
 	std::string debugInfo_channel;
 	ros::Publisher debugInfo_publisher;
 
-
 	std::string pose_channel;
 	ros::Publisher pose_publisher;
+
+	std::string image_out_channel;
+	image_transport::Publisher image_out_publisher;
 
 	ros::NodeHandle nh_;
 };
