@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   dynamic_reconfigure
   image_transport
+  message_generation
   rosbag
   roscpp
   sensor_msgs
@@ -39,6 +40,17 @@ message("-- G2O_INCLUDE_DIR : " ${G2O_INCLUDE_DIR})
 generate_dynamic_reconfigure_options(
   cfg/LSDDebugParams.cfg
   cfg/LSDParams.cfg
+)
+
+add_message_files(
+  FILES
+  imageAndPoseMsg.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs
+  geometry_msgs
 )
 
 catkin_package(

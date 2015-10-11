@@ -22,7 +22,7 @@
 
 #include <ros/ros.h>
 
-#include <image_transport/image_transport.h>
+#include "lsd_slam_core/imageAndPoseMsg.h"
 
 #include "IOWrapper/Output3DWrapper.h"
 
@@ -100,8 +100,8 @@ private:
 	std::string pose_channel;
 	ros::Publisher pose_publisher;
 
-	std::string image_out_channel;
-	image_transport::Publisher image_out_publisher;
+	std::string image_pose_channel;
+	ros::Publisher image_pose_publisher;
 
 	ros::NodeHandle nh_;
 };

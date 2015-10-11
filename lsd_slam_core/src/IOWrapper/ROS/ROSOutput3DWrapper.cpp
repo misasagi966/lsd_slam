@@ -28,6 +28,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "lsd_slam_core/imageAndPoseMsg.h"
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
 
@@ -61,12 +62,10 @@ ROSOutput3DWrapper::ROSOutput3DWrapper(int width, int height)
 	debugInfo_publisher = nh_.advertise<std_msgs::Float32MultiArray>(debugInfo_channel,1);
 
 	pose_channel = nh_.resolveName("lsd_slam/pose");
-	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel,1);
+	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel, 1);
 
-	image_transport::ImageTransport it(nh_);
-
-	image_out_channel = nh_.resolveName("lsd_slam/image_out");
-	image_out_publisher = it.advertise(image_out_channel, 1);
+	image_pose_channel = nh_.resolveName("lsd_slam/image_pose");
+	image_pose_publisher = nh_.advertise<lsd_slam_core::imageAndPoseMsg>(image_pose_channel, 1);
 
 	publishLvl = 0;
 }
@@ -124,11 +123,9 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 {
 	lsd_slam_viewer::keyframeMsg fMsg;
 
-
 	fMsg.id = kf->id();
 	fMsg.time = kf->timestamp();
 	fMsg.isKeyframe = false;
-
 
 	memcpy(fMsg.camToWorld.data(),kf->getScaledCamToWorld().cast<float>().data(),sizeof(float)*7);
 	fMsg.fx = kf->fx(publishLvl);
@@ -141,7 +138,6 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	fMsg.pointcloud.clear();
 
 	liveframe_publisher.publish(fMsg);
-
 
 	SE3 camToWorld = se3FromSim3(kf->getScaledCamToWorld());
 
@@ -162,13 +158,19 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 		pMsg.pose.orientation.z *= -1;
 		pMsg.pose.orientation.w *= -1;
 	}
+
 	ros::Time timestamp = ros::Time(kf->timestamp());
 
-	cv::Mat imgCv = kf->imageCv(0);
-	sensor_msgs::ImagePtr imgMsg = cv_bridge::CvImage(std_msgs::Header(), "mono8", imgCv).toImageMsg();
-	imgMsg->header.stamp = timestamp;
-	imgMsg->header.frame_id = "world";
-	image_out_publisher.publish(imgMsg);
+	cv::Mat ocvImg = kf->imageCv(0);
+	lsd_slam_core::imageAndPoseMsg imgAndPoseMsg;
+
+	sensor_msgs::Image sensorImg;
+	cv_bridge::CvImage cvImg(std_msgs::Header(), "mono8", ocvImg);
+	cvImg.toImageMsg(sensorImg);
+
+	imgAndPoseMsg.image = sensorImg;
+	imgAndPoseMsg.pose = pMsg.pose;
+	image_pose_publisher.publish(imgAndPoseMsg);
 
 	pMsg.header.stamp = timestamp;
 	pMsg.header.frame_id = "world";
