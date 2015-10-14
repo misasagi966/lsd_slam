@@ -78,6 +78,8 @@ void dynConfCbDebug(lsd_slam_core::LSDDebugParamsConfig &config, uint32_t level)
 
 void dynConfCb(lsd_slam_core::LSDParamsConfig &config, uint32_t level)
 {
+	displayDepthMap = config.displayDepthMap;
+
 	allowNegativeIdepths = config.allowNegativeIdepths;
 	useSubpixelStereo = config.useSubpixelStereo;
 	multiThreading = config.multiThreading;
