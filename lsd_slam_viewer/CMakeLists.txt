@@ -43,13 +43,24 @@ set(CMAKE_CXX_FLAGS
    "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
 )
 
-add_message_files(DIRECTORY msg FILES keyframeMsg.msg keyframeGraphMsg.msg)
-generate_messages(DEPENDENCIES)
+add_message_files(
+  FILES
+  keyframeMsg.msg
+  keyframeGraphMsg.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 generate_dynamic_reconfigure_options(
   cfg/LSDSLAMViewerParams.cfg
 )
 
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 # Sources files
 set(SOURCE_FILES         
@@ -68,9 +79,12 @@ set(HEADER_FILES
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
-)  
+)
 
 add_executable(viewer src/main_viewer.cpp ${SOURCE_FILES} ${HEADER_FILES})
+
+add_dependencies(viewer ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${QGLVIEWER_LIBRARY} 
 			     ${catkin_LIBRARIES}

@@ -31,5 +31,6 @@
   <run_depend>eigen</run_depend>
   <run_depend>suitesparse</run_depend>
   <run_depend>libg2o</run_depend>
+  <run_depend>message_runtime</run_depend>
   
 </package> 

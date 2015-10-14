@@ -56,7 +56,7 @@ generate_messages(
 catkin_package(
   LIBRARIES lsdslam
   DEPENDS Eigen SuiteSparse
-  CATKIN_DEPENDS libg2o
+  CATKIN_DEPENDS libg2o message_runtime
 )
 
 # SSE flags
@@ -114,6 +114,7 @@ add_library(lsdslam SHARED ${SOURCE_FILES})
 target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} ${OpenCV_LIBS}  csparse cxsparse )
 #rosbuild_link_boost(lsdslam thread)
 
+add_dependencies(lsdslam ${catkin_EXPORTED_TARGETS})
 
 # build live ros node
 add_executable(live_slam src/main_live_odometry.cpp)
