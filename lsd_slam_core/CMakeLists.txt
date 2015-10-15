@@ -114,7 +114,8 @@ add_library(lsdslam SHARED ${SOURCE_FILES})
 target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} ${OpenCV_LIBS}  csparse cxsparse )
 #rosbuild_link_boost(lsdslam thread)
 
-add_dependencies(lsdslam ${catkin_EXPORTED_TARGETS})
+add_dependencies(lsdslam lsd_slam_core_generate_messages)
+add_dependencies(lsdslam lsd_slam_core_gencfg)
 
 # build live ros node
 add_executable(live_slam src/main_live_odometry.cpp)

@@ -22,8 +22,8 @@
 
 
 #include <dynamic_reconfigure/server.h>
-#include "lsd_slam_core/LSDParamsConfig.h"
-#include "lsd_slam_core/LSDDebugParamsConfig.h"
+#include <lsd_slam_core/LSDParamsConfig.h>
+#include <lsd_slam_core/LSDDebugParamsConfig.h>
 #include "util/settings.h"
 
 
