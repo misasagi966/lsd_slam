@@ -328,8 +328,8 @@ int KeyFrameDisplay::flushPC(std::ofstream* f)
 	for(int i=0;i<num;i++)
 	{
 		f->write((const char *)tmpBuffer[i].point,3*sizeof(float));
-		float color = tmpBuffer[i].color[0] / 255.0;
-		f->write((const char *)&color,sizeof(float));
+		unsigned char color[3] = {tmpBuffer[i].color[0], tmpBuffer[i].color[1], tmpBuffer[i].color[2]};
+		f->write((const char *)color,3*sizeof(unsigned char));
 	}
 	//	*f << tmpBuffer[i].point[0] << " " << tmpBuffer[i].point[1] << " " << tmpBuffer[i].point[2] << " " << (tmpBuffer[i].color[0] / 255.0) << "\n";
 
