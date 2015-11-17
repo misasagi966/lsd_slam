@@ -78,7 +78,9 @@ void KeyFrameGraphDisplay::draw()
 		f2 << std::string("property float x\n");
 		f2 << std::string("property float y\n");
 		f2 << std::string("property float z\n");
-		f2 << std::string("property float intensity\n");
+		f2 << std::string("property uchar red\n");
+		f2 << std::string("property uchar green\n");
+		f2 << std::string("property uchar blue\n");
 		f2 << std::string("end_header\n");
 
 		std::ifstream f3((ros::package::getPath("lsd_slam_viewer")+"/pc_tmp.ply").c_str());
