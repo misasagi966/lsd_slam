@@ -112,6 +112,7 @@ Frame::~Frame()
 	for (int level = 0; level < PYRAMID_LEVELS; ++ level)
 	{
 		FrameMemory::getInstance().returnBuffer(data.image[level]);
+		FrameMemory::getInstance().returnBuffer(data.imageRGB[level]); //release memory
 		FrameMemory::getInstance().returnBuffer(reinterpret_cast<float*>(data.gradients[level]));
 		FrameMemory::getInstance().returnBuffer(data.maxGradients[level]);
 		FrameMemory::getInstance().returnBuffer(data.idepth[level]);
@@ -463,6 +464,7 @@ void Frame::initialize(int id, int width, int height, const Eigen::Matrix3f& K, 
 		data.idepthVarValid[level] = false;
 
 		data.image[level] = 0;
+		data.imageRGB[level] = 0; //init imageRGB
 		data.gradients[level] = 0;
 		data.maxGradients[level] = 0;
 		data.idepth[level] = 0;
@@ -667,6 +669,11 @@ void Frame::releaseImage(int level)
 	}
 	FrameMemory::getInstance().returnBuffer(data.image[level]);
 	data.image[level] = 0;
+	/* check using imageRGB and release*/
+	if(data.image[level] != 0){
+		FrameMemory::getInstance().returnBuffer(data.imageRGB[level]);
+		data.imageRGB[level] = 0;
+	}
 }
 
 void Frame::buildGradients(int level)
