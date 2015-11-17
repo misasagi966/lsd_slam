@@ -102,9 +102,9 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 	{
 		pc[idx].idepth = idepth[idx];
 		pc[idx].idepth_var = idepthVar[idx];
-		pc[idx].color[2] = color[idxRGB];
+		pc[idx].color[0] = color[idxRGB];
 		pc[idx].color[1] = color[idxRGB+1];
-		pc[idx].color[0] = color[idxRGB+2];
+		pc[idx].color[2] = color[idxRGB+2];
 		pc[idx].color[3] = 100;
 	}
 
