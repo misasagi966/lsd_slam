@@ -71,17 +71,18 @@ void KeyFrameGraphDisplay::draw()
 		f.flush();
 		f.close();
 
-		std::ofstream f2((ros::package::getPath("lsd_slam_viewer")+"/pc.ply").c_str());
-		f2 << std::string("ply\n");
-		f2 << std::string("format binary_little_endian 1.0\n");
-		f2 << std::string("element vertex ") << numpts << std::string("\n");
-		f2 << std::string("property float x\n");
-		f2 << std::string("property float y\n");
-		f2 << std::string("property float z\n");
-		f2 << std::string("property uchar red\n");
-		f2 << std::string("property uchar green\n");
-		f2 << std::string("property uchar blue\n");
-		f2 << std::string("end_header\n");
+		std::ofstream f2((ros::package::getPath("lsd_slam_viewer")+"/pc.pcd").c_str());
+		f2 << std::string("# .PCD v0.7 - Point Cloud Data file format\n");
+		f2 << std::string("VERSION 0.7\n");
+		f2 << std::string("FIELDS x y z rgb\n");
+		f2 << std::string("SIZE 4 4 4 4\n");
+		f2 << std::string("TYPE F F F F\n");
+		f2 << std::string("COUNT 1 1 1 1\n");
+		f2 << std::string("WIDTH ") << numpts << std::string("\n");
+		f2 << std::string("HEIGHT 1\n");
+		f2 << std::string("VIEWPOINT 0 0 0 1 0 0 0\n");
+		f2 << std::string("POINTS ") << numpts << std::string("\n");
+		f2 << std::string("DATA binary\n");
 
 		std::ifstream f3((ros::package::getPath("lsd_slam_viewer")+"/pc_tmp.ply").c_str());
 		while(!f3.eof()) f2.put(f3.get());
