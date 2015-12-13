@@ -209,3 +209,12 @@ void KeyFrameGraphDisplay::addGraphMsg(lsd_slam_viewer::keyframeGraphMsgConstPtr
 
 //	printf("graph update: %d constraints, %d poses\n", msg->numConstraints, msg->numFrames);
 }
+
+void KeyFrameGraphDisplay::addFlushMsg(lsd_slam_viewer::flushMsgConstPtr msg)
+{
+	printf("point1");
+	if(msg->flushPC){
+		printf("point2");
+		flushPointcloud = true;	// flushPC
+	}
+}

@@ -148,6 +148,15 @@ void PointCloudViewer::addGraphMsg(lsd_slam_viewer::keyframeGraphMsgConstPtr msg
 	meddleMutex.unlock();
 }
 
+void PointCloudViewer::addFlushMsg(lsd_slam_viewer::flushMsgConstPtr msg) //FlushPC
+{
+	meddleMutex.lock();
+
+	graphDisplay->addFlushMsg(msg);
+
+	meddleMutex.unlock();
+}
+
 
 void PointCloudViewer::init()
 {

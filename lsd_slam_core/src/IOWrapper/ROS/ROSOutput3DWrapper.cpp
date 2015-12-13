@@ -27,6 +27,7 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
+#include "lsd_slam_viewer/flushMsg.h" //flushPC
 
 #include "DataStructures/Frame.h"
 #include "GlobalMapping/KeyFrameGraph.h"
@@ -54,6 +55,9 @@ ROSOutput3DWrapper::ROSOutput3DWrapper(int width, int height)
 
 	debugInfo_channel = nh_.resolveName("lsd_slam/debug");
 	debugInfo_publisher = nh_.advertise<std_msgs::Float32MultiArray>(debugInfo_channel,1);
+
+	flush_channel = nh_.resolveName("lsd_slam/flush");
+	flush_publisher = nh_.advertise<lsd_slam_viewer::flushMsg>(flush_channel,1); // FlushPC
 
 	pose_channel = nh_.resolveName("lsd_slam/pose");
 	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel,1);
@@ -209,6 +213,14 @@ void ROSOutput3DWrapper::publishDebugInfo(Eigen::Matrix<float, 20, 1> data)
 		msg.data.push_back((float)(data[i]));
 
 	debugInfo_publisher.publish(msg);
+}
+
+// flushPC
+void ROSOutput3DWrapper::publishflush()
+{
+	lsd_slam_viewer::flushMsg fMsg;
+	fMsg.flushPC = true;
+	flush_publisher.publish(fMsg);
 }
 
 }

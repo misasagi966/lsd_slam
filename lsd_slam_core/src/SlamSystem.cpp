@@ -128,6 +128,7 @@ SlamSystem::SlamSystem(int w, int h, Eigen::Matrix3f K, bool enableSLAM)
 SlamSystem::~SlamSystem()
 {
 	keepRunning = false;
+	
 
 	// make sure none is waiting for something.
 	printf("... waiting for SlamSystem's threads to exit\n");
@@ -225,7 +226,6 @@ void SlamSystem::mappingThreadLoop()
 void SlamSystem::finalize()
 {
 	printf("Finalizing Graph... finding final constraints!!\n");
-
 	lastNumConstraintsAddedOnFullRetrack = 1;
 	while(lastNumConstraintsAddedOnFullRetrack != 0)
 	{
@@ -257,6 +257,10 @@ void SlamSystem::finalize()
 	boost::unique_lock<boost::mutex> lock(newFrameMappedMutex);
 	newFrameMappedSignal.wait(lock);
 	newFrameMappedSignal.wait(lock);
+
+	// flushPC	
+	if (outputWrapper != nullptr)
+		outputWrapper->publishflush();
 
 	usleep(200000);
 	printf("Done Finalizing Graph.!!\n");

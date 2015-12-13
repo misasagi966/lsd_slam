@@ -26,6 +26,7 @@
 
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
+#include "lsd_slam_viewer/flushMsg.h" // flushPC
 #include "boost/thread.hpp"
 
 class KeyFrameDisplay;
@@ -62,7 +63,7 @@ public:
 
 	void addMsg(lsd_slam_viewer::keyframeMsgConstPtr msg);
 	void addGraphMsg(lsd_slam_viewer::keyframeGraphMsgConstPtr msg);
-
+	void addFlushMsg(lsd_slam_viewer::flushMsgConstPtr msg);
 
 
 	bool flushPointcloud;

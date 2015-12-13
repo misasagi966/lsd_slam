@@ -77,6 +77,9 @@ public:
 
 	virtual void publishDebugInfo(Eigen::Matrix<float, 20, 1> data);
 
+	// flushPC
+	virtual void publishflush();
+
 
 	int publishLvl;
 	
@@ -95,6 +98,8 @@ private:
 	std::string debugInfo_channel;
 	ros::Publisher debugInfo_publisher;
 
+	std::string flush_channel;
+	ros::Publisher flush_publisher;
 
 	std::string pose_channel;
 	ros::Publisher pose_publisher;

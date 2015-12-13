@@ -62,6 +62,8 @@ public:
 	virtual void publishTrajectoryIncrement(Eigen::Matrix<float, 3, 1> pt, std::string identifier) {};
 
 	virtual void publishDebugInfo(Eigen::Matrix<float, 20, 1> data) {};
+	// flushPC
+	virtual void publishflush(){};
 
 };
 }

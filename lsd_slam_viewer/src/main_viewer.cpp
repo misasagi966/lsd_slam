@@ -31,6 +31,7 @@
 
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
+#include "lsd_slam_viewer/flushMsg.h" //FlushPC
 
 
 #include "boost/foreach.hpp"
@@ -80,7 +81,11 @@ void graphCb(lsd_slam_viewer::keyframeGraphMsgConstPtr msg)
 		viewer->addGraphMsg(msg);
 }
 
-
+void flushCb(lsd_slam_viewer::flushMsgConstPtr msg) // FlushPC
+{
+	if(viewer != 0)
+		viewer->addFlushMsg(msg);
+}
 
 void rosThreadLoop( int argc, char** argv )
 {
@@ -99,6 +104,7 @@ void rosThreadLoop( int argc, char** argv )
 
 	ros::Subscriber liveFrames_sub = nh.subscribe(nh.resolveName("lsd_slam/liveframes"),1, frameCb);
 	ros::Subscriber keyFrames_sub = nh.subscribe(nh.resolveName("lsd_slam/keyframes"),20, frameCb);
+	ros::Subscriber flush_sub = nh.subscribe(nh.resolveName("lsd_slam/flush"),10, flushCb); //FlushPC
 	ros::Subscriber graph_sub       = nh.subscribe(nh.resolveName("lsd_slam/graph"),10, graphCb);
 
 	ros::spin();
@@ -123,6 +129,7 @@ void rosFileLoop( int argc, char** argv )
 	std::vector<std::string> topics;
 	topics.push_back(std::string("/lsd_slam/liveframes"));
 	topics.push_back(std::string("/lsd_slam/keyframes"));
+	topics.push_back(std::string("/lsd_slam/flush")); // FlushPC
 	topics.push_back(std::string("/lsd_slam/graph"));
 
 	rosbag::View view(bag, rosbag::TopicQuery(topics));
@@ -137,6 +144,9 @@ void rosFileLoop( int argc, char** argv )
 
 		 if(m.getTopic() == "/lsd_slam/graph")
 			 graphCb(m.instantiate<lsd_slam_viewer::keyframeGraphMsg>());
+
+		 if(m.getTopic() == "/lsd_slam/flush")
+			 flushCb(m.instantiate<lsd_slam_viewer::flushMsg>());
 	 }
 
 	ros::spin();
